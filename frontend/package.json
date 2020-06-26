@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "apollo-client": "^2.6.10",
+    "apollo-link-http": "^1.5.17",
+    "bootstrap": "^4.5.0",
+    "gql": "^1.1.2",
+    "graphql": "^15.1.0",
+    "graphql-tag": "^2.10.3",
+    "next": "^9.4.4",
+    "next-apollo": "^4.0.1",
+    "react": "^16.13.1",
+    "react-apollo": "^3.1.5",
+    "react-dom": "^16.13.1",
+    "reactstrap": "^8.5.1",
+    "recompose": "^0.30.0"
+  }
+}
