@@ -1,12 +1,10 @@
-import { HttpLink } from "apollo-link-http";
-import { withData } from "next-apollo";
-
+import { withApollo } from "next-apollo";
+import ApolloClient, { HttpLink, InMemoryCache} from 'apollo-boost'
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337"
 
-const config = {
-  link: new HttpLink({
-    uri: `${API_URL}/graphql`,
-  })
-};
+const apolloClient = new ApolloClient({
+  uri: `${API_URL}/graphql`,
+  cache: new InMemoryCache()
+})
 
-export default withData(config);
+export default withApollo(apolloClient);

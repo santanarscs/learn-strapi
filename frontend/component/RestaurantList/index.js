@@ -1,68 +1,13 @@
-import gql from 'graphql-tag'
-import { graphql } from 'react-apollo'
+import { gql } from 'apollo-boost'
+import { useQuery } from '@apollo/react-hooks'
 import Link from 'next/link'
 
-import { Card, CardBody, CardTitle } from 'reactstrap'
+import { Card, CardBody,CardImg,CardText, CardTitle } from 'reactstrap'
 
-const RestaurantList = (
-  { data: {loading, error, restaurants }, search},
-  req
-) => {
-  if(error) return 'Error loading restaurants';
-  if(restaurants && restaurants.lenght) {
-    const searchQuery = restaurants.filter(query => query.name.toLowerCase().includes(search))
-    if(searchQuery.length !== 0) {
-      return (
-        <div>
-          <div className="h-100">
-            {searchQuery.map(res => (
-              <Card
-                style={{width: "30%", margin: "0 10px"}}
-                className="h-100"
-                key={res._id}
-                >
-                  <CardImg top={true} style={{height: 250}} src={`http://localhost:1337${res.image.ulr}`} />
-                  <CardBody>
-                    <CardTitle>{res.name}</CardTitle>
-                    <CardText>{res.description}</CardText>
-                  </CardBody>
-                  <div className="card-footer">
-                    <Link
-                      as={`/restaurants/${res._id}`}
-                      href={`/restaurants?id=${res._id}`}
-                    >
-                      <a  className="btn btn-primary"></a>
-                    </Link>
-                  </div>
-                </Card>
-            ))}
-          </div>
-          <style jsx global>
-            {`
-              a {
-                color: white;
-              }
-              a:link {
-                text-decoration:none;
-                color: white;
-              }
-              .card-columns {
-                column-count: 3;
-              }
-            `}
-          </style>
-        </div>
-      )
-    } else {
-      return <h1>No Restaurants found</h1>;
-    }
-  }
-  return <h1>Loading</h1>
-};
-const query = gql`
-  {
+const GET_RESTAURANTS = gql`
+  query allRestaurants {
     restaurants {
-      _id
+      id
       name
       description
       image {
@@ -71,13 +16,73 @@ const query = gql`
     }
   }
 `;
-RestaurantList.getInitialProps = async ({ req }) => {
-  const res = await fetch("http://api.github.com/repos/zeit/next.js");
-  const json = await res.json();
-  return { stars: json.stargazers_count };
-};
-export default graphql(query, {
-  props: ({ data }) =>  ({
-    data
-  })
-})(RestaurantList);
+function RestaurantList() {
+  const search = ""
+  const { loading, error, data, fetchmore} = useQuery(GET_RESTAURANTS, {
+    notifyOnNetworkStatusChange: true
+  });
+  if (error) return "Error loading restaurants";
+  if(data && data.restaurants) {
+    const searchQuery = data.restaurants.filter(query =>
+      query.name.toLowerCase().includes(search)
+    );
+    console.log(searchQuery)
+    return (
+      <>
+      <div>
+        <div className="h-100 flex">
+          {searchQuery.map(res => (
+            <Card
+              style={{ width: "30%", margin: "0 10px" }}
+              className="h-100"
+              key={res.id}
+            >
+              <CardImg
+                top={true}
+                style={{ height: 250 }}
+                src={`http://localhost:1337${res.image[0]?.url}`}
+              />
+              <CardBody>
+                <CardTitle>{res.name}</CardTitle>
+                <CardText>{res.description}</CardText>
+              </CardBody>
+              <div className="card-footer">
+                <Link
+                  as={`/restaurants/${res.id}`}
+                  href={`/restaurants?id=${res.id}`}
+                >
+                  <a className="btn btn-primary">View</a>
+                </Link>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        <style jsx global>
+          {`
+            .flex {
+              display: flex
+            }
+            a {
+              color: white;
+            }
+            a:link {
+              text-decoration: none;
+              color: white;
+            }
+            a:hover {
+              color: white;
+            }
+            .card-columns {
+              column-count: 3;
+            }
+          `}
+        </style>
+      </div>
+     
+      </>
+    )
+  }
+  return <div>Carregando...</div>
+}
+export default RestaurantList
