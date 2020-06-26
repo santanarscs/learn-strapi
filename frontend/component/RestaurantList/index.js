@@ -26,7 +26,6 @@ function RestaurantList() {
     const searchQuery = data.restaurants.filter(query =>
       query.name.toLowerCase().includes(search)
     );
-    console.log(searchQuery)
     return (
       <>
       <div>
